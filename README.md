@@ -11,7 +11,7 @@
 Bignum library for arithmetic in Z/nZ (the positive half, since we don't care about signs) which can also be used to describe operations over some finite field GF(p) (F_p). Note that in some of the cases below, the use of a finite field can be substituted for a more general Z/nZ.
 
 ##### `dh.c`
-This implements Diffie-Hallman key exchange.
+This implements Diffie-Hellman key exchange.
 
 ##### `ec.c`
 Given an elliptic curve in Weierstrass form (y^2 = x^3 + ax + b) over a finite field, this gives a representation of the group of points on the elliptic curve, i.e. point addition, point doubling, multiplication by a number.
