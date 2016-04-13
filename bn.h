@@ -22,7 +22,7 @@
    #define ul_t      uint8_t
    #define ll_t      int16_t
    #define ull_t     uint16_t
-   #define BN_PRINT_FORMAT "%02"PRIx8
+   #define BN_PRINT_FORMAT "%02"PRIX8
    #define SWAP SWAP8
    #define BN_LIMB_BYTES 1
 #elif BN_LIMB_SIZE == 16
@@ -30,7 +30,7 @@
    #define ul_t      uint16_t
    #define ll_t      int32_t
    #define ull_t     uint32_t
-   #define BN_PRINT_FORMAT "%04"PRIx16
+   #define BN_PRINT_FORMAT "%04"PRIX16
    #define SWAP SWAP16
    #define BN_LIMB_BYTES 2
 #elif BN_LIMB_SIZE == 32
@@ -38,7 +38,8 @@
    #define ul_t      uint32_t
    #define ll_t      int64_t
    #define ull_t     uint64_t
-   #define BN_PRINT_FORMAT "%08"PRIx32
+   #define BN_PRINT_FORMAT_I "%"PRIX32
+   #define BN_PRINT_FORMAT "%08"PRIX32
    #define SWAP SWAP32
    #define BN_LIMB_BYTES 4
 #elif BN_LIMB_SIZE == 64
@@ -46,7 +47,7 @@
    #define ul_t      uint64_t
    #define ll_t      __int128
    #define ull_t     unsigned __int128
-   #define BN_PRINT_FORMAT "%016"PRIx64
+   #define BN_PRINT_FORMAT "%016"PRIX64
    #define SWAP SWAP64
    #define BN_LIMB_BYTES 8
 #else
@@ -88,7 +89,7 @@ typedef uint64_t  u64;
 #define SWAP8(x) x
 
 /*! Convert bits to number of limbs. */
-#define BYTES_TO_LIMBS(x) ((x * 8) / BN_LIMB_BITS) // TODO: Round up to closest limb? 
+#define BYTES_TO_LIMBS(x) ((x * 8) / BN_LIMB_BITS + ((x * 8) % BN_LIMB_BITS ? 1 : 0))
 #define LIMBS_TO_BYTES(x) (x * BN_LIMB_BYTES)
 
 /*! Bignum struct. */
@@ -211,7 +212,7 @@ int bn_lsb(bn_t *a);
 /*!
 * \brief Prints the bignum in hexadecimal format.
 */
-void bn_print(FILE *f, bn_t *a);
+void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post);
 
 /*!
 * \brief Read bignum from file stream.
@@ -288,4 +289,3 @@ bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n);
 bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *b, bn_t *n);
 
 #endif // _BN_H_
-

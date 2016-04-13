@@ -338,11 +338,8 @@ bn_t *bn_from_str(bn_t *a, const s8 *s)
    {
       limb = 0;
 
-      for(z = 0, w = 0; z < step; z += 2, w += 1)
+      for(z = 0, w = 0; z < step && x >= 0; z += 2, w += 1)
       {
-         if(x < 0)
-            break;
-         
          p_limb[w] = _bn_str_to_u8(&s[x]);
 
          x -= 2;
@@ -534,24 +531,39 @@ bn_t *bn_rshift(bn_t *a, int b)
    return _bn_rshift(a, b);
 }
 
-int inline bn_lsb(bn_t *a)
+int bn_lsb(bn_t *a)
 {
    return a->l[0] & 1;
 }
 
-int inline bn_msb(bn_t *a)
+int bn_msb(bn_t *a)
 {
    return a->l[a->n - 1] >> (BN_LIMB_BITS - 1);
 }
 
-void bn_print(FILE *f, bn_t *a)
+void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post)
 {
-   int x;
+   int i, init = 1;
 
-   for(x = a->n_limbs - 1; x >= 0; x--)
-      fprintf(f, BN_PRINT_FORMAT, a->l[x]);
+   fputs((char *)pre, fp);
 
-   fprintf(f, "\n");
+   //Skip zero limbs.
+   for (i = a->n_limbs - 1; !a->l[i] & i >= 0; i--);
+   if (i < 0)
+      fprintf(fp, "0");
+
+   for(; i >= 0; i--)
+   {
+      if(init)
+      {
+         init = 0;
+         fprintf(fp, BN_PRINT_FORMAT_I, a->l[i]);
+      }
+      else
+         fprintf(fp, BN_PRINT_FORMAT, a->l[i]);
+   }
+
+   fputs((char *)post, fp);
 }
 
 bn_t *bn_read(FILE *fp, bn_t *dst)
@@ -657,13 +669,13 @@ bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 bn_t *bn_rand(bn_t *a)
 {
    int size = a->n_limbs * BN_LIMB_BYTES;
-   s8 tmp[size];
+   u8 *tmp = (u8 *)malloc(sizeof(u8) * size);
 
    #if defined(_WIN32) || defined(_MSC_VER)
       HCRYPTPROV hProvider;
 
       CryptAcquireContext(&hProvider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
-      CryptGenRandom(hProvider, size, (u8 *)tmp);
+      CryptGenRandom(hProvider, size, tmp);
    #else
       u8 path[] = "/dev/urandom";
 
@@ -674,6 +686,8 @@ bn_t *bn_rand(bn_t *a)
    
    bn_zero(a);
    bn_from_bin(a, tmp, size);
+
+   free(tmp);
 
    return a;
 }
@@ -825,7 +839,7 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_set_ui(t, 1);
    bn_to_mon(t, n);
 
-   for(x = 0; x < bn_maxbit(e) + 1; x++)
+   for(x = 0; x <= bn_maxbit(e); x++)
    {
       if(bn_getbit(e, x))
          bn_mon_mul(t, t, s, n);

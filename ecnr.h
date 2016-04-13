@@ -12,25 +12,25 @@
 /*! Elliptic curve Nyberg-Rueppel context. */
 typedef struct _ecnr_ctxt_t
 {
-   /*! Elliptic curve group. */
-   ec_group_t *ecg;
-   /*! Base field modulus. */
-   bn_t *N;
-   /*! Generator point G. (mon!) */
-   ec_point_t *G;
-   /*! Public point Q. (mon!) */
-   ec_point_t *Q;
-   /*! Private k. */
-   bn_t *k;
+	/*! Elliptic curve group. */
+	ec_group_t *ecg;
+	/*! Base field modulus. */
+	bn_t *N;
+	/*! Generator point G. (mon!) */
+	ec_point_t *G;
+	/*! Public point Q. (mon!) */
+	ec_point_t *Q;
+	/*! Private k. */
+	bn_t *k;
 } ecnr_ctxt_t;
 
 /*! Elliptic curve Nyberg-Rueppel signature. */
 typedef struct _ecnr_sig_t
 {
-   /*! Signature R. */
-   bn_t *R;
-   /*! Signature S. */
-   bn_t *S;
+	/*! Signature R. */
+	bn_t *R;
+	/*! Signature S. */
+	bn_t *S;
 } ecnr_sig_t;
 
 /*!

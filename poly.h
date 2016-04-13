@@ -19,12 +19,12 @@
 */
 typedef struct _poly
 {
-   /*! The polynomial's degree. */
-   int degree;
-   /*! Coefficients (mon). */
-   bn_t **coeffs;
-   /*! Modulus. */
-   bn_t *N;
+	/*! The polynomial's degree. */
+	int degree;
+	/*! Coefficients (mon). */
+	bn_t **coeffs;
+	/*! Modulus. */
+	bn_t *N;
 } poly_t;
 
 /*!
@@ -82,7 +82,7 @@ poly_t *poly_zero(poly_t *p);
 poly_t *poly_one(poly_t *p);
 
 /*!
-* \brief Checks wehter the polynomial is linear one.
+* \brief Checks whether the polynomial is linear one.
 */
 int poly_is_one(poly_t *p);
 
@@ -94,12 +94,27 @@ int poly_deg(poly_t *p);
 /*!
 * \brief Set coefficient.
 */
-int poly_set_coeff(poly_t *p, u32 i, bn_t *coeff);
+int poly_set_coeff(poly_t *p, int i, bn_t *coeff);
 
 /*!
 * \brief Free coefficient.
 */
-int poly_free_coeff(poly_t *p, u32 i);
+int poly_free_coeff(poly_t *p, int i);
+
+/*!
+* \brief Fill coefficients from format.
+*/
+poly_t *poly_from_fmt(poly_t *p, const char *fmt, ...);
+
+/*!
+* \brief Convert coefficients to montgomery form.
+*/
+poly_t *poly_to_mon(poly_t *p);
+
+/*!
+* \brief Convert coefficients from montgomery form.
+*/
+poly_t *poly_from_mon(poly_t *p);
 
 /*!
 * \brief Evaluate polynomial at given x.

@@ -12,25 +12,25 @@
 /*! Pell conic Nyberg-Rueppel context. */
 typedef struct _pcnr_ctxt_t
 {
-   /*! Pell conic group. */
-   pc_group_t *pcg;
-   /*! Base field modulus. */
-   bn_t *N;
-   /*! Generator point G. (mon!) */
-   pc_point_t *G;
-   /*! Public point Q. (mon!) */
-   pc_point_t *Q;
-   /*! Private k. */
-   bn_t *k;
+	/*! Pell conic group. */
+	pc_group_t *pcg;
+	/*! Base field modulus. */
+	bn_t *N;
+	/*! Generator point G. (mon!) */
+	pc_point_t *G;
+	/*! Public point Q. (mon!) */
+	pc_point_t *Q;
+	/*! Private k. */
+	bn_t *k;
 } pcnr_ctxt_t;
 
 /*! Pell conic Nyberg-Rueppel signature. */
 typedef struct _pcnr_sig_t
 {
-   /*! Signature R. */
-   bn_t *R;
-   /*! Signature S. */
-   bn_t *S;
+	/*! Signature R. */
+	bn_t *R;
+	/*! Signature S. */
+	bn_t *S;
 } pcnr_sig_t;
 
 /*!

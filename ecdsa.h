@@ -12,25 +12,25 @@
 /*! ECDSA context. */
 typedef struct _ecdsa_ctxt_t
 {
-   /*! Elliptic curve group. */
-   ec_group_t *ecg;
-   /*! Base field modulus. */
-   bn_t *N;
-   /*! Generator point G. (mon!) */
-   ec_point_t *G;
-   /*! Public point Q. (mon!) */
-   ec_point_t *Q;
-   /*! Private k. */
-   bn_t *k;
+	/*! Elliptic curve group. */
+	ec_group_t *ecg;
+	/*! Base field modulus. */
+	bn_t *N;
+	/*! Generator point G. (mon!) */
+	ec_point_t *G;
+	/*! Public point Q. (mon!) */
+	ec_point_t *Q;
+	/*! Private k. */
+	bn_t *k;
 } ecdsa_ctxt_t;
 
 /*! ECDSA signature. */
 typedef struct _ecdsa_sig_t
 {
-   /*! Signature R. */
-   bn_t *R;
-   /*! Signature S. */
-   bn_t *S;
+	/*! Signature R. */
+	bn_t *R;
+	/*! Signature S. */
+	bn_t *S;
 } ecdsa_sig_t;
 
 /*!

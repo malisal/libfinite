@@ -12,19 +12,19 @@
 /*! Pell conic point. */
 typedef struct _pc_point
 {
-   /*! x coord. */
-   bn_t *x;
-   /*! y coord. */
-   bn_t *y;
+	/*! x coord. */
+	bn_t *x;
+	/*! y coord. */
+	bn_t *y;
 } pc_point_t;
 
 /*! Pell conic group parameters (defining equation: x^2 - D*y^2 = 1). */
 typedef struct _pc_group
 {
-   /*! Modulus. */
-   bn_t *p;
-   /*! Parameter D. (mon!) */
-   bn_t *D;
+	/*! Modulus. */
+	bn_t *p;
+	/*! Parameter D. (mon!) */
+	bn_t *D;
 } pc_group_t;
 
 /*!

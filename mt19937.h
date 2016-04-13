@@ -15,10 +15,10 @@
 /*! Mersenne-Twister 19937 context. */
 typedef struct _mt19937_ctxt
 {
-   /*! State. */
-   unsigned int state[MT_N];
-   /*! Index. */
-   unsigned int idx;
+	/*! State. */
+	unsigned int state[MT_N];
+	/*! Index. */
+	unsigned int idx;
 } mt19937_ctxt_t;
 
 /*!

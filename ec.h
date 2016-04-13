@@ -12,21 +12,21 @@
 /*! Elliptic curve point. */
 typedef struct _ec_point
 {
-   /*! x coord. */
-   bn_t *x;
-   /*! y coord. */
-   bn_t *y;
+	/*! x coord. */
+	bn_t *x;
+	/*! y coord. */
+	bn_t *y;
 } ec_point_t;
 
 /*! Elliptic curve group parameters (defining equation: y^2 = x^3 + ax + b). */
 typedef struct _ec_group
 {
-   /*! Modulus. */
-   bn_t *p;
-   /*! Parameter a. (mon!) */
-   bn_t *a;
-   /*! Parameter b. (mon!) */
-   bn_t *b;
+	/*! Modulus. */
+	bn_t *p;
+	/*! Parameter a. (mon!) */
+	bn_t *a;
+	/*! Parameter b. (mon!) */
+	bn_t *b;
 } ec_group_t;
 
 /*!
