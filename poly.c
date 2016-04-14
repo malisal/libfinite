@@ -351,12 +351,6 @@ bn_t *poly_eval(poly_t *p, bn_t *dst, bn_t *x)
 	for (i = 0; i <= p->degree; i++)
 	{
 		bn_set_ui(e, i);
-		// TODO: endianess!!!
-		//e->v[3] = i & 0x000000FF;
-		//e->v[2] = (i & 0x0000FF00) >> 8;
-		//e->v[1] = (i & 0x00FF0000) >> 16;
-		//e->v[0] = (i & 0xFF000000) >> 24;
-
 		// t = x^e
 		bn_mon_pow(t, tx, p->N, e);
 		// dst += t * a_i
@@ -484,7 +478,7 @@ poly_t *poly_mulc(poly_t *d, poly_t *a, bn_t *b)
 	return d;
 }
 
-poly_t *poly_div_fast(poly_t *q, poly_t *r, poly_t *a, poly_t *b)
+poly_t *poly_div(poly_t *q, poly_t *r, poly_t *a, poly_t *b)
 {
 	int i, dega = poly_deg(a), degb = poly_deg(b);
 
@@ -542,7 +536,7 @@ poly_t *poly_div_fast(poly_t *q, poly_t *r, poly_t *a, poly_t *b)
 	return q;
 }
 
-poly_t *poly_rem_fast(poly_t *r, poly_t *a, poly_t *b)
+poly_t *poly_rem(poly_t *r, poly_t *a, poly_t *b)
 {
 	int i, dega = poly_deg(a), degb = poly_deg(b);
 

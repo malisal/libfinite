@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "pqr.h"
 
-poly_t *pqr_add_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
+poly_t *pqr_add(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 {
 	int i;
 
@@ -20,7 +20,7 @@ poly_t *pqr_add_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 	return d;
 }
 
-poly_t *pqr_sub_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
+poly_t *pqr_sub(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 {
 	int i;
 
@@ -35,10 +35,21 @@ poly_t *pqr_sub_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 poly_t *pqr_mul_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 {
 	poly_mul_fast(d, a, b);
-	return poly_rem_fast(d, d, N);
+	return poly_rem(d, d, N);
 }
 
-poly_t *pqr_inv_fast(poly_t *d, poly_t *p, poly_t *N)
+poly_t *pqr_mul(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
+{
+	if (d == a || d == b)
+	{
+		poly_mul(d, a, b);
+		return poly_rem(d, d, N);
+	}
+
+	return pqr_mul_fast(d, a, b, N);
+}
+
+poly_t *pqr_inv(poly_t *d, poly_t *p, poly_t *N)
 {
 	assert(d->degree == p->degree);
 
@@ -58,10 +69,10 @@ poly_t *pqr_inv_fast(poly_t *d, poly_t *p, poly_t *N)
 
 	while (1)
 	{
-		poly_div_fast(t2, a, a, b);   // q,a = quo_rem(a,b)
-		poly_mul_fast(t1, t2, eb);    // t1 = q*eb
+		poly_div(t2, a, a, b);     // q, a = quo_rem(a, b)
+		poly_mul_fast(t1, t2, eb); // t1 = q*eb
 		poly_copy(t2, ea, 1);
-		poly_sub_fast(ea, t2, t1);    // ea = ea - t1
+		poly_sub_fast(ea, t2, t1); // ea = ea - t1
 
 		if (a->degree == 0)
 			break;
@@ -101,6 +112,7 @@ poly_t *pqr_exp_fast(poly_t *d, poly_t *p, bn_t *e, poly_t *N)
 	int i;
 
 	assert(d->degree == p->degree);
+	assert(d != p);
 
 	poly_one(d);
 
@@ -118,4 +130,18 @@ poly_t *pqr_exp_fast(poly_t *d, poly_t *p, bn_t *e, poly_t *N)
 	poly_free(r, 1);
 
 	return d;
+}
+
+poly_t *pqr_exp(poly_t *d, poly_t *p, bn_t *e, poly_t *N)
+{
+	if (d == p)
+	{
+		poly_t *t = poly_alloc(p->degree, p->N, 1);
+		poly_copy(t, p, 0);
+		pqr_exp_fast(d, t, e, N);
+		poly_free(t, 1);
+		return d;
+	}
+
+	return pqr_exp_fast(d, p, e, N);
 }

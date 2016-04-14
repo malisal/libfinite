@@ -162,11 +162,11 @@ poly_t *poly_mulc(poly_t *d, poly_t *a, bn_t *b);
 /*!
 * \brief Divide two polynomials yielding quotient and remainder.
 */
-poly_t *poly_div_fast(poly_t *q, poly_t *r, poly_t *a, poly_t *b);
+poly_t *poly_div(poly_t *q, poly_t *r, poly_t *a, poly_t *b);
 
 /*!
 * \brief Compute remainder of two polynomials.
 */
-poly_t *poly_rem_fast(poly_t *r, poly_t *a, poly_t *b);
+poly_t *poly_rem(poly_t *r, poly_t *a, poly_t *b);
 
 #endif
