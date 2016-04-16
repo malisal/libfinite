@@ -669,7 +669,7 @@ bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 bn_t *bn_rand(bn_t *a)
 {
    int size = a->n_limbs * BN_LIMB_BYTES;
-   u8 *tmp = (u8 *)malloc(sizeof(u8) * size);
+   u8 *tmp = (u8 *)mem_alloc(sizeof(u8) * size);
 
    #if defined(_WIN32) || defined(_MSC_VER)
       HCRYPTPROV hProvider;
@@ -687,7 +687,7 @@ bn_t *bn_rand(bn_t *a)
    bn_zero(a);
    bn_from_bin(a, tmp, size);
 
-   free(tmp);
+   mem_free(tmp);
 
    return a;
 }
