@@ -7,6 +7,14 @@
    http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 ```
 
+### Introduction
+
+`libfinite` is a small and fast bignum library. 
+
+```bash
+
+```
+
 ##### `bn.c`
 Bignum library for arithmetic in Z/nZ (the positive half, since we don't care about signs) which can also be used to describe operations over some finite field GF(p) (F_p). Note that in some of the cases below, the use of a finite field can be substituted for a more general Z/nZ.
 
@@ -38,7 +46,7 @@ This implements operations for the ring of polynomials R over some finite field 
 ##### `pqr.c`
 Given a polynomial ring R and a polynomial I in R, this implements operations for the polynomial quotient ring R/(I), i.e. addition, subtraction, multiplication, inversion, exponentiation. This can be used to construct a representation of certain finite fields, e.g. F_q where q = p^n, p prime, n some positive integer, i.e. take I to be an irreducible polynomial of degree n over the finite field F_p.
 
-##### ssecrets
+##### `ssecrets.c`
 This implements Shamir's Secret Sharing.
 
 ### Examples
