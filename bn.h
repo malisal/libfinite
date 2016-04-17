@@ -7,9 +7,7 @@
 #ifndef _BN_H_
 #define _BN_H_
 
-#if defined(NAKED)
-   #include <system/syscall.h>
-#else
+#if !defined(NAKED)
    #include <stdio.h>
    #include <stdint.h>
    #include <inttypes.h>

@@ -4,9 +4,7 @@
 * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 */
 
-#if defined(NAKED)
-   #include <system/syscall.h>
-#else
+#if !defined(NAKED)
    #include <stdio.h>
    #include <stdlib.h>
    #include <string.h>
