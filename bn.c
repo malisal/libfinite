@@ -548,7 +548,7 @@ void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post)
    fputs((char *)pre, fp);
 
    //Skip zero limbs.
-   for (i = a->n_limbs - 1; !a->l[i] & i >= 0; i--);
+   for (i = a->n_limbs - 1; (!a->l[i] & i) >= 0; i--);
    if (i < 0)
       fprintf(fp, "0");
 
@@ -685,7 +685,7 @@ bn_t *bn_rand(bn_t *a)
    #endif
    
    bn_zero(a);
-   bn_from_bin(a, tmp, size);
+   bn_from_bin(a, (s8 *)tmp, size);
 
    mem_free(tmp);
 
