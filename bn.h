@@ -7,12 +7,16 @@
 #ifndef _BN_H_
 #define _BN_H_
 
-#include <stdio.h>
-#include <stdint.h>
-#include <inttypes.h>
+#if defined(NAKED)
+   #include <system/syscall.h>
+#else
+   #include <stdio.h>
+   #include <stdint.h>
+   #include <inttypes.h>
 
-#if !defined(_WIN32) && !defined(_MSC_VER)
-   #include <unistd.h>
+   #if !defined(_WIN32) && !defined(_MSC_VER)
+      #include <unistd.h>
+   #endif
 #endif
 
 #include "config.h"
@@ -212,6 +216,7 @@ int bn_msb(bn_t *a);
 */
 int bn_lsb(bn_t *a);
 
+#if defined(BN_PRINT_FUNCS)
 /*!
 * \brief Prints the bignum in hexadecimal format.
 */
@@ -226,6 +231,7 @@ bn_t *bn_read(FILE *fp, bn_t *dst);
 * \brief Write bignum to file stream.
 */
 bn_t *bn_write(FILE *fp, bn_t *num);
+#endif
 
 /*!
 * \brief Textbook multiplication of two bignums.

@@ -4,26 +4,51 @@
 * http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#if defined(NAKED)
+   #include <system/syscall.h>
+#else
+   #include <stdio.h>
+   #include <stdlib.h>
+   #include <string.h>
+   #include <assert.h>
+   #include <sys/types.h>
+   #include <sys/stat.h>
+   #include <fcntl.h>
 
-#if defined(_WIN32) || defined(_MSC_VER)
-#include <windows.h>
+   #if defined(_WIN32) || defined(_MSC_VER)
+      #include <windows.h>
+   #endif
 #endif
 
 #include "bn.h"
 
-void static _memset(char *d, char v, int size)
+#if !defined(BN_ASSERT)
+   #define assert(...) 
+#endif
+
+void static _memset(s8 *d, char v, int size)
 {
    int x;
 
    for(x = 0; x < size; x++)
       d[x] = v;
+}
+
+void static _memcpy(s8 *d, s8 *s, int size)
+{
+   int x;
+
+   for(x = 0; x < size; x++)
+      d[x] = s[x];
+}
+
+int static _strlen(const s8 *s)
+{
+   int x;
+
+   for(x = 0; s[x] != 0; x++);
+
+   return x;
 }
 
 // Fast Montgomery initialization (taken from PolarSSL)
@@ -322,7 +347,7 @@ void bn_to_bin(s8 *s, bn_t *a)
 
 bn_t *bn_from_str(bn_t *a, const s8 *s)
 {
-   int len = strlen(s);
+   int len = _strlen(s);
    int x, y, z, w;
 
    ul_t limb;
@@ -392,7 +417,7 @@ bn_t *bn_copy(bn_t *a, bn_t *b)
    int s = MIN(a->n_limbs, b->n_limbs);
 
    bn_zero(a);
-   memcpy(a->l, b->l, sizeof(ul_t) * s);
+   _memcpy((s8 *)a->l, (s8 *)b->l, sizeof(ul_t) * s);
 
    return a;
 }
@@ -541,6 +566,7 @@ int bn_msb(bn_t *a)
    return a->l[a->n - 1] >> (BN_LIMB_BITS - 1);
 }
 
+#if defined(BN_PRINT_FUNCS)
 void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post)
 {
    int i, init = 1;
@@ -590,6 +616,7 @@ bn_t *bn_write(FILE *fp, bn_t *num)
    
    return num;
 }
+#endif
 
 /*
 bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)

@@ -2,9 +2,13 @@
 #define _CONFIG_H_
 
 /*! Size (in bits) of each limb */
-#if !defined(BN_LIMB_SIZE)
-   #define BN_LIMB_SIZE 64
-#endif
+#define BN_LIMB_SIZE 64
+
+/*! Include file-related functions */
+#define BN_PRINT_FUNCS
+
+/*! Include debug checks */
+#define BN_ASSERT
 
 /*! Custom memory functions, e.g., for embedded code. */
 #define mem_alloc(x) malloc(x)
