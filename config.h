@@ -3,7 +3,7 @@
 
 /*! Size (in bits) of each limb */
 #if !defined(BN_LIMB_SIZE)
-   #define BN_LIMB_SIZE 32
+   #define BN_LIMB_SIZE 64
 #endif
 
 /*! Custom memory functions, e.g., for embedded code. */

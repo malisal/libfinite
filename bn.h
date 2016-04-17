@@ -22,6 +22,7 @@
    #define ul_t      uint8_t
    #define ll_t      int16_t
    #define ull_t     uint16_t
+   #define BN_PRINT_FORMAT_I "%"PRIX8
    #define BN_PRINT_FORMAT "%02"PRIX8
    #define SWAP SWAP8
    #define BN_LIMB_BYTES 1
@@ -30,6 +31,7 @@
    #define ul_t      uint16_t
    #define ll_t      int32_t
    #define ull_t     uint32_t
+   #define BN_PRINT_FORMAT_I "%"PRIX16
    #define BN_PRINT_FORMAT "%04"PRIX16
    #define SWAP SWAP16
    #define BN_LIMB_BYTES 2
@@ -47,6 +49,7 @@
    #define ul_t      uint64_t
    #define ll_t      __int128
    #define ull_t     unsigned __int128
+   #define BN_PRINT_FORMAT_I "%"PRIX64
    #define BN_PRINT_FORMAT "%016"PRIX64
    #define SWAP SWAP64
    #define BN_LIMB_BYTES 8

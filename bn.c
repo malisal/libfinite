@@ -548,8 +548,11 @@ void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post)
    fputs((char *)pre, fp);
 
    //Skip zero limbs.
-   for (i = a->n_limbs - 1; (!a->l[i] & i) >= 0; i--);
-   if (i < 0)
+   for(i = a->n_limbs - 1; i >= 0; i--)
+      if(a->l[i] != 0)
+         break;
+
+   if(i == 0)
       fprintf(fp, "0");
 
    for(; i >= 0; i--)
@@ -843,7 +846,7 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    {
       if(bn_getbit(e, x))
          bn_mon_mul(t, t, s, n);
-
+      
       bn_mon_mul(s, s, s, n);
    }
 
