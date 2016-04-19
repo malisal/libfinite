@@ -455,12 +455,38 @@ bn_t *bn_add(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
    return d;
 }
 
+bn_t *bn_add_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
+{
+   // D = A + B % N
+
+   // Prevent overflow
+   if(_bn_add_ui(d, a, b))
+      _bn_sub(d, d, n);
+
+   bn_reduce(d, n);
+
+   return d;
+}
+
 bn_t *bn_sub(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
 {
    // D = A - B % N
 
    // Prevent underflow
    if(_bn_sub(d, a, b))
+      _bn_add(d, d, n);
+
+   bn_reduce(d, n);
+
+   return d;
+}
+
+bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
+{
+   // D = A - B % N
+
+   // Prevent underflow
+   if(_bn_sub_ui(d, a, b))
       _bn_add(d, d, n);
 
    bn_reduce(d, n);
@@ -575,9 +601,6 @@ void bn_print(FILE *fp, const s8 *pre, bn_t *a, const s8 *post)
    for(i = a->n_limbs - 1; i >= 0; i--)
       if(a->l[i] != 0)
          break;
-
-   if(i == 0)
-      fprintf(fp, "0");
 
    for(; i >= 0; i--)
    {
@@ -696,7 +719,7 @@ bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 
 bn_t *bn_rand(bn_t *a)
 {
-   int size = a->n_limbs * BN_LIMB_BYTES;
+   int size = a->n;
    u8 *tmp = (u8 *)mem_alloc(sizeof(u8) * size);
 
    #if defined(_WIN32) || defined(_MSC_VER)
@@ -720,20 +743,20 @@ bn_t *bn_rand(bn_t *a)
    return a;
 }
 
-// Generate random a \in [1, b - 1].
-bn_t *bn_rand_range(bn_t *a, bn_t *b)
+// Generate random a \in [x, b - y].
+bn_t *bn_rand_range(bn_t *a, int x, bn_t *b, int y)
 {
-   bn_t *t =bn_alloc(b->n);
-   _bn_sub_ui(t, b, 1);
+   bn_t *t = bn_alloc(b->n);
+   _bn_sub_ui(t, b, y);
 
    while(1)
    {
       bn_rand(a);
-
-      if(bn_cmp_ui(a, 1) < 0) // Check a >= 1
+      
+      if(bn_cmp_ui(a, x) <= 0)   // Check a < x
          continue;
 
-      if(bn_cmp(a, t) <= 0)   // Check a <= b - 1
+      if(bn_cmp(a, t) > 0)       // Check a > b - y
          continue;
 
       break;
@@ -905,10 +928,13 @@ bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n)
 bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 {
    // D = A**E mod N
-   bn_t *ret = bn_from_mon(bn_mon_pow(d, bn_to_mon(a, n), e, n), n);
+   bn_t *t = bn_copy(bn_alloc(a->n), a);
+   bn_to_mon(t, n);
 
-   bn_from_mon(a, n);
+   bn_from_mon(bn_mon_pow(d, t, e, n), n);
 
-   return ret;
+   bn_free(t);
+
+   return d;
 }
 

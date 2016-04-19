@@ -170,9 +170,19 @@ bn_t *bn_set_ui(bn_t *a, uint64_t val);
 bn_t *bn_add(bn_t *a, bn_t *b, bn_t *c, bn_t *n);
 
 /*!
+* \brief Add a bignum and an integer.
+*/
+bn_t *bn_add_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n);
+
+/*!
 * \brief Subtract two bignums.
 */
 bn_t *bn_sub(bn_t *a, bn_t *b, bn_t *c, bn_t *n);
+
+/*!
+* \brief Subtract a bignum and an integer.
+*/
+bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n);
 
 /*!
 * \brief Compare two bignums. Returns: BN_CMP_L, BN_CMP_G or BN_CMP_E.
@@ -253,9 +263,9 @@ bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b);
 bn_t *bn_rand(bn_t *a);
 
 /*!
-* \brief Generate random a \in [1, b - 1].
+* \brief Generate random a \in [x, b - y].
 */
-bn_t *bn_rand_range(bn_t *a, bn_t *b);
+bn_t *bn_rand_range(bn_t *a, int x, bn_t *b, int y);
 
 /*!
 * \brief Convert to Montgomery form.
