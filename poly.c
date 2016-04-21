@@ -147,7 +147,7 @@ poly_t *poly_adjust(poly_t *p, int degree, int alloc_free_coeffs)
 			// Allocate new coefficients.
 			int i;
 			for (i = p->degree + 1; i < degree + 1; i++)
-				p->coeffs[i] = bn_alloc(p->N->n);
+				p->coeffs[i] = bn_zero(bn_alloc(p->N->n));
 		}
 
 		p->degree = degree;
@@ -219,6 +219,20 @@ poly_t *poly_zero(poly_t *p)
 		bn_zero(p->coeffs[i]);
 
 	return p;
+}
+
+int poly_is_zero(poly_t *p)
+{
+	int i, is_one = 0;
+
+	assert(p->degree >= 0);
+
+	// Check if all the coeffs are 0.
+	for (i = 0; i < p->degree + 1; i++)
+		if (!bn_is_zero(p->coeffs[i]))
+			return 0;
+
+	return 1;
 }
 
 poly_t *poly_one(poly_t *p)
@@ -302,6 +316,12 @@ poly_t *poly_from_fmt(poly_t *p, const char *fmt, ...)
 			break;
 		case 'I':
 			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, int)), p->N);
+			break;
+		case 'q':
+			bn_set_ui(p->coeffs[i], va_arg(ap, ull_t));
+			break;
+		case 'Q':
+			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, ull_t)), p->N);
 			break;
 		case 's':
 			bn_from_str(p->coeffs[i], va_arg(ap, char *));

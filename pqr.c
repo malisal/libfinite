@@ -14,7 +14,7 @@ poly_t *pqr_add(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 
 	assert(d->degree == a->degree && d->degree == b->degree);
 
-	for (i = 0; i < d->degree; i++)
+	for (i = 0; i < d->degree + 1; i++)
 		bn_add(d->coeffs[i], a->coeffs[i], b->coeffs[i], N->N);
 
 	return d;
@@ -26,7 +26,7 @@ poly_t *pqr_sub(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 
 	assert(d->degree == a->degree && d->degree == b->degree);
 
-	for (i = 0; i < d->degree; i++)
+	for (i = 0; i < d->degree + 1; i++)
 		bn_sub(d->coeffs[i], a->coeffs[i], b->coeffs[i], N->N);
 
 	return d;
@@ -35,15 +35,19 @@ poly_t *pqr_sub(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 poly_t *pqr_mul_fast(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 {
 	poly_mul_fast(d, a, b);
-	return poly_rem(d, d, N);
+	poly_rem(d, d, N);
+	return poly_adjust(d, a->degree, 1);
 }
 
 poly_t *pqr_mul(poly_t *d, poly_t *a, poly_t *b, poly_t *N)
 {
+	assert(d->degree == a->degree && d->degree == b->degree);
+
 	if (d == a || d == b)
 	{
 		poly_mul(d, a, b);
-		return poly_rem(d, d, N);
+		poly_rem(d, d, N);
+		return poly_adjust(d, a->degree, 1);
 	}
 
 	return pqr_mul_fast(d, a, b, N);

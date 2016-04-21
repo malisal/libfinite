@@ -77,6 +77,11 @@ poly_t *poly_concat(poly_t *d, poly_t *a, poly_t *b);
 poly_t *poly_zero(poly_t *p);
 
 /*!
+* \brief Checks whether the polynomial is zero.
+*/
+int poly_is_zero(poly_t *p);
+
+/*!
 * \brief Set linear coefficient to one.
 */
 poly_t *poly_one(poly_t *p);
