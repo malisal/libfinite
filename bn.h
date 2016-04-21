@@ -132,7 +132,7 @@ bn_t *bn_from_bin(bn_t *a, s8 *s, int len);
 /*!
 * \brief Export bignum to a char array.
 */
-void bn_to_bin(s8 *s, bn_t *a);
+u8 *bn_to_bin(u8 *s, bn_t *a);
 
 /*!
 * \brief Read bignum from a string.

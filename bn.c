@@ -298,7 +298,7 @@ bn_t *bn_from_bin(bn_t *a, s8 *s, int len)
    return a;
 }
 
-void bn_to_bin(s8 *s, bn_t *a)
+u8 *bn_to_bin(u8 *s, bn_t *a)
 {
    int x, y;
    ul_t *p = (ul_t *)s;
@@ -312,6 +312,8 @@ void bn_to_bin(s8 *s, bn_t *a)
       else
          p[y] = SWAP(a->l[x]);
    }
+
+   return s;
 }
 
 bn_t *bn_from_str(bn_t *a, const s8 *s)
@@ -691,7 +693,7 @@ bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 bn_t *bn_rand(bn_t *a)
 {
    int size = a->n;
-   u8 *tmp = (u8 *)mem_alloc(sizeof(u8) * size);
+   u8 *tmp = (u8 *)mem_alloc(size);
 
    #if defined(_WIN32) || defined(_MSC_VER)
       HCRYPTPROV hProvider;
@@ -700,8 +702,7 @@ bn_t *bn_rand(bn_t *a)
       CryptGenRandom(hProvider, size, tmp);
    #else
       u8 path[] = "/dev/urandom";
-
-      int fd = open((const s8 *)path, O_RDONLY, 0);
+      int fd = open(path, O_RDONLY, 0);
       read(fd, tmp, size);
       close(fd);
    #endif
