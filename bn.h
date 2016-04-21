@@ -59,6 +59,10 @@
    #error "Are you a wizard?"
 #endif
 
+#if !defined(BN_ASSERT)
+   #define assert(...) 
+#endif
+
 typedef char      s8;
 typedef uint8_t   u8;
 typedef int16_t   s16;
@@ -162,7 +166,7 @@ void bn_free(bn_t *a);
 /*!
 * \brief Set the bignum to an integer value.
 */
-bn_t *bn_set_ui(bn_t *a, uint64_t val);
+bn_t *bn_set_ui(bn_t *a, ull_t val);
 
 /*!
 * \brief Add two bignums.

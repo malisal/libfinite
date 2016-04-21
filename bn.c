@@ -20,10 +20,6 @@
 
 #include "bn.h"
 
-#if !defined(BN_ASSERT)
-   #define assert(...) 
-#endif
-
 // Fast Montgomery initialization (taken from PolarSSL)
 static void _bn_mon_init(bn_t *n)
 {
@@ -404,7 +400,7 @@ void bn_free(bn_t *a)
    mem_free(a);
 }
 
-inline bn_t *bn_set_ui(bn_t *a, uint64_t val)
+inline bn_t *bn_set_ui(bn_t *a, ull_t val)
 {
    int x;
 
