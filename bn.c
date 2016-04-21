@@ -24,31 +24,6 @@
    #define assert(...) 
 #endif
 
-void static _memset(s8 *d, char v, int size)
-{
-   int x;
-
-   for(x = 0; x < size; x++)
-      d[x] = v;
-}
-
-void static _memcpy(s8 *d, s8 *s, int size)
-{
-   int x;
-
-   for(x = 0; x < size; x++)
-      d[x] = s[x];
-}
-
-int static _strlen(const s8 *s)
-{
-   int x;
-
-   for(x = 0; s[x] != 0; x++);
-
-   return x;
-}
-
 // Fast Montgomery initialization (taken from PolarSSL)
 static void _bn_mon_init(bn_t *n)
 {
@@ -345,7 +320,7 @@ void bn_to_bin(s8 *s, bn_t *a)
 
 bn_t *bn_from_str(bn_t *a, const s8 *s)
 {
-   int len = _strlen(s);
+   int len = strlen(s);
    int x, y, z, w;
 
    ul_t limb;
@@ -379,7 +354,7 @@ bn_t *bn_from_str(bn_t *a, const s8 *s)
 
 bn_t *bn_zero(bn_t *a)
 {
-   _memset((char *)a->l, 0, a->n_limbs * BN_LIMB_BYTES);
+   memset((char *)a->l, 0, a->n_limbs * BN_LIMB_BYTES);
    return a;
 }
 
@@ -388,7 +363,7 @@ bn_t *bn_alloc(int size)
    int s;
    
    bn_t *ret = (bn_t *)mem_alloc(sizeof(bn_t));
-   _memset((char *)ret, 0x00, sizeof(bn_t));
+   memset((char *)ret, 0x00, sizeof(bn_t));
    
    ret->n = size;
 
@@ -400,7 +375,7 @@ bn_t *bn_alloc(int size)
    // Always allocate 4 limbs more than we need, so that potential bn_mon_mul is faster
    s = sizeof(ul_t) * (ret->n_limbs + 4);
    ret->l = (ul_t *)mem_alloc(s);
-   _memset((char *)ret->l, 0x00, s);
+   memset((char *)ret->l, 0x00, s);
 
    return ret;
 }
@@ -415,7 +390,7 @@ bn_t *bn_copy(bn_t *a, bn_t *b)
    int s = MIN(a->n_limbs, b->n_limbs);
 
    bn_zero(a);
-   _memcpy((s8 *)a->l, (s8 *)b->l, sizeof(ul_t) * s);
+   memcpy((s8 *)a->l, (s8 *)b->l, sizeof(ul_t) * s);
 
    return a;
 }
