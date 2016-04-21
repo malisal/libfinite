@@ -696,7 +696,7 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
    return d;
 }
 
-bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
+bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 {
    int x;
 

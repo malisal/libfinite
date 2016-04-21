@@ -255,7 +255,7 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b);
 * \brief Divide two bignums, while tracking both the quotient (q) as well as
 *        and the remainder (r).
 */
-bn_t *bn_divmod(bn_t *q, bn_t *r, bn_t *a, bn_t *b);
+bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b);
 
 /*!
 * \brief Fill the bignum with random data.
