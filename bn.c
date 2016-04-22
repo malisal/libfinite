@@ -701,8 +701,7 @@ bn_t *bn_rand(bn_t *a)
       CryptAcquireContext(&hProvider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
       CryptGenRandom(hProvider, size, tmp);
    #else
-      u8 path[] = "/dev/urandom";
-      int fd = open(path, O_RDONLY, 0);
+      int fd = open("/dev/urandom", O_RDONLY, 0);
       read(fd, tmp, size);
       close(fd);
    #endif
