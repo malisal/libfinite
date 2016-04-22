@@ -469,11 +469,25 @@ bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
 
 int bn_cmp(bn_t *a, bn_t *b)
 {
-   int x;
+   int x, y;
 
    assert(a->n == b->n);
 
    for(x = a->n_limbs; x >= 0; x--)
+      if(a->l[x] != 0)
+         break;
+
+   for(y = b->n_limbs; y >= 0; y--)
+      if(b->l[y] != 0)
+         break;
+
+   if(x < y)
+      return BN_CMP_L;
+
+   if(x > y)
+      return BN_CMP_G;
+
+   for(; x >= 0; x--)
    {
       if(a->l[x] < b->l[x])
          return BN_CMP_L;
@@ -783,14 +797,10 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
    if(n->mp == 0)
       _bn_mon_init(n);
 
-   // These nums need to be 4 digits bigger so we prevent overflows.
+   // This num need to be 4 digits bigger so we prevent overflows.
    // The mul_ui increases digit count by 1, and add's possibly increase 
    // the count by one (each).
-
    bn_t *t = bn_alloc_limbs(n->n_limbs + 4);
-   bn_t *n_b = bn_alloc_limbs(n->n_limbs + 4);
-
-   bn_copy(n_b, n);
 
    for(x = 0; x < a->n_limbs; x++)
    {
@@ -805,13 +815,11 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
       _bn_rshift_limbs(t, 1);
    }
 
-   if(bn_cmp(t, n_b) >= 0)
-      _bn_sub(t, t, n_b);
+   if(bn_cmp(t, n) >= 0)
+      _bn_sub(t, t, n);
 
    bn_copy(d, t);
-
    bn_free(t);
-   bn_free(n_b);
 
    return d;
 }
