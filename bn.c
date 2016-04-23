@@ -402,13 +402,13 @@ void bn_free(bn_t *a)
    mem_free(a);
 }
 
-inline bn_t *bn_set_ui(bn_t *a, ull_t val)
+inline bn_t *bn_set_ui(bn_t *a, u64 val)
 {
    int x;
 
    for(x = 0; x < sizeof(val) / sizeof(ul_t); x++)
    {
-      a->l[x] = val & ~(ul_t)0;
+      a->l[x] = val & (ul_t)-1;
       val >>= BN_LIMB_BITS;
    }
 
@@ -602,7 +602,7 @@ bn_t *bn_read(FILE *fp, bn_t *dst)
 
 bn_t *bn_write(FILE *fp, bn_t *num)
 {
-   s8 *data = mem_alloc(num->n);
+   u8 *data = mem_alloc(num->n);
 
    bn_to_bin(data, num);
    fwrite(data, 1, num->n, fp);

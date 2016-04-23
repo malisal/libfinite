@@ -166,7 +166,7 @@ void bn_free(bn_t *a);
 /*!
 * \brief Set the bignum to an integer value.
 */
-bn_t *bn_set_ui(bn_t *a, ull_t val);
+bn_t *bn_set_ui(bn_t *a, u64 val);
 
 /*!
 * \brief Add two bignums.
