@@ -364,11 +364,7 @@ bn_t *bn_alloc(int size)
    memset((char *)ret, 0x00, sizeof(bn_t));
    
    ret->n = size;
-
-   if(BYTES_TO_LIMBS(size) == 0)
-      ret->n_limbs = 1;
-   else
-      ret->n_limbs = BYTES_TO_LIMBS(size);
+   ret->n_limbs = BYTES_TO_LIMBS(size);
 
    // Always allocate 4 limbs more than we need, so that potential bn_mon_mul is faster
    s = sizeof(ul_t) * (ret->n_limbs + 4);
