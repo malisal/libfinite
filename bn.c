@@ -181,12 +181,16 @@ static bn_t *_bn_rshift_limbs(bn_t *a, int n)
 {
    int x;
 
+   // Makes the code run faster
+   memmove(a->l, &a->l[n], (a->n_limbs - n) * BN_LIMB_BYTES);
+
+/*
    for(x = 0; x < a->n_limbs - n; x++)
       a->l[x] = a->l[x+n];
 
    while(x <= n)
       a->l[x++] = 0;
-
+*/
    return a;
 }
 
@@ -235,18 +239,13 @@ static bn_t *_bn_mad_ui(bn_t *d, bn_t *a, ul_t b)
    }
    
    // Add in the remaining carry
-   for(; x < d->n_limbs; x++)
+   while(S)
    {
       S += d->l[x];
       d->l[x] = S;
 
       S >>= BN_LIMB_BITS;
-
-      if(!S)
-      {
-         // We are done here
-         break;
-      }
+      x++;
    }
 
    return d;
