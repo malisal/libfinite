@@ -179,12 +179,12 @@ static bn_t *_bn_lshift(bn_t *a, int b)
 
 static bn_t *_bn_rshift_limbs(bn_t *a, int n)
 {
-   int x;
-
    // Makes the code run faster
    memmove(a->l, &a->l[n], (a->n_limbs - n) * BN_LIMB_BYTES);
 
 /*
+   int x;
+
    for(x = 0; x < a->n_limbs - n; x++)
       a->l[x] = a->l[x+n];
 
