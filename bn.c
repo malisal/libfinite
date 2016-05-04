@@ -693,7 +693,7 @@ bn_t *bn_rand(bn_t *a)
    #if defined(_WIN32) || defined(_MSC_VER)
       HCRYPTPROV hProvider;
 
-      CryptAcquireContext(&hProvider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT);
+      CryptAcquireContext(&hProvider, 0, 0, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT);
       CryptGenRandom(hProvider, size, tmp);
    #else
       int fd = open("/dev/urandom", O_RDONLY, 0);

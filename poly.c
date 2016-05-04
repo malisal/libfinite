@@ -223,7 +223,7 @@ poly_t *poly_zero(poly_t *p)
 
 int poly_is_zero(poly_t *p)
 {
-	int i, is_one = 0;
+	int i;
 
 	assert(p->degree >= 0);
 
