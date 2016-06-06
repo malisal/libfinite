@@ -5,7 +5,7 @@ PREFIX :=
 CC := $(PREFIX)clang
 AR := $(PREFIX)ar
 
-SRCS := bn.c ec.c dh.c ecdsa.c poly.c mt19937.c ecnr.c inr.c pc.c pcnr.c pqr.c ssecrets.c
+SRCS := bn.c ec.c dh.c ecdsa.c poly.c mt19937.c ecnr.c inr.c pc.c pcnr.c pqr.c ssecrets.c bls.c pairing.c
 OBJS := $(SRCS:.c=.o)
 
 CFLAGS  := -Os -ffunction-sections -fdata-sections -Wall -Wno-unused-function -DNDEBUG
