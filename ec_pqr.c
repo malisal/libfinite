@@ -62,6 +62,13 @@ ec_pqr_point_t *ec_pqr_point_copy(ec_pqr_point_t *d, ec_pqr_point_t *s)
 	return d;
 }
 
+int ec_pqr_point_cmp(ec_pqr_point_t *p, ec_pqr_point_t *q)
+{
+	if (poly_cmp(p->x, q->x) == POLY_CMP_E && poly_cmp(p->y, q->y) == POLY_CMP_E)
+		return POINT_CMP_E;
+	return POINT_CMP_NE;
+}
+
 ec_pqr_point_t *ec_pqr_point_zero(ec_pqr_point_t *p)
 {
 	poly_zero(p->x);
@@ -85,6 +92,14 @@ void ec_pqr_point_from_mon(ec_pqr_point_t *p)
 {
 	poly_from_mon(p->x);
 	poly_from_mon(p->y);
+}
+
+ec_pqr_point_t *ec_pqr_point_neg(ec_pqr_point_t *r, ec_pqr_point_t *p, ec_pqr_group_t *ecg)
+{
+	poly_copy(r->x, p->x, 1);
+	poly_zero(r->y);
+	pqr_sub(r->y, r->y, p->y, ecg->p);
+	return r;
 }
 
 ec_pqr_point_t *ec_pqr_point_double(ec_pqr_point_t *r, ec_pqr_point_t *p, ec_pqr_group_t *ecg)

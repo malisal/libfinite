@@ -9,6 +9,9 @@
 
 #include "pqr.h"
 
+#define POINT_CMP_E 1
+#define POINT_CMP_NE 0
+
 /*! Elliptic curve (over polynomial quotient ring) point. */
 typedef struct _ec_pqr_point
 {
@@ -45,6 +48,11 @@ void ec_pqr_point_free(ec_pqr_point_t *p);
 ec_pqr_point_t *ec_pqr_point_copy(ec_pqr_point_t *d, ec_pqr_point_t *s);
 
 /*!
+* \brief Compare points.
+*/
+int ec_pqr_point_cmp(ec_pqr_point_t *p, ec_pqr_point_t *q);
+
+/*!
 * \brief Zero out point.
 */
 ec_pqr_point_t *ec_pqr_point_zero(ec_pqr_point_t *p);
@@ -63,6 +71,11 @@ void ec_pqr_point_to_mon(ec_pqr_point_t *p);
 * \brief Convert point from montgomery form.
 */
 void ec_pqr_point_from_mon(ec_pqr_point_t *p);
+
+/*!
+* \brief Negate point.
+*/
+ec_pqr_point_t *ec_pqr_point_neg(ec_pqr_point_t *r, ec_pqr_point_t *p, ec_pqr_group_t *ecg);
 
 /*!
 * \brief Double point.
