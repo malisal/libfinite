@@ -113,7 +113,7 @@ poly_t *poly_alloc(int degree, bn_t *N, int alloc_coeffs)
 	{
 		int i;
 		for (i = 0; i < degree + 1; i++)
-			res->coeffs[i] = bn_alloc(N->n);
+			res->coeffs[i] = bn_zero(bn_alloc(N->n));
 	}
 
 	return res;
@@ -211,6 +211,20 @@ poly_t *poly_concat(poly_t *d, poly_t *a, poly_t *b)
 	return d;
 }
 
+int poly_cmp(poly_t * p, poly_t * q)
+{
+	int i;
+
+	if (p->degree != q->degree)
+		return POLY_CMP_NE;
+
+	for (i = 0; i < p->degree + 1; i++)
+		if (bn_cmp(p->coeffs[i], q->coeffs[i]) != BN_CMP_E)
+			return POLY_CMP_NE;
+
+	return POLY_CMP_E;
+}
+
 poly_t *poly_zero(poly_t *p)
 {
 	int i;
@@ -223,7 +237,7 @@ poly_t *poly_zero(poly_t *p)
 
 int poly_is_zero(poly_t *p)
 {
-	int i;
+	int i, is_one = 0;
 
 	assert(p->degree >= 0);
 
@@ -312,16 +326,16 @@ poly_t *poly_from_fmt(poly_t *p, const char *fmt, ...)
 		switch (fmt[i])
 		{
 		case 'i':
-			bn_set_ui(p->coeffs[i], va_arg(ap, int));
+			bn_set_ui(p->coeffs[i], va_arg(ap, uint32_t));
 			break;
 		case 'I':
-			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, int)), p->N);
+			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, uint32_t)), p->N);
 			break;
 		case 'q':
-			bn_set_ui(p->coeffs[i], va_arg(ap, ull_t));
+			bn_set_ui(p->coeffs[i], va_arg(ap, uint64_t));
 			break;
 		case 'Q':
-			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, ull_t)), p->N);
+			bn_to_mon(bn_set_ui(p->coeffs[i], va_arg(ap, uint64_t)), p->N);
 			break;
 		case 's':
 			bn_from_str(p->coeffs[i], va_arg(ap, char *));

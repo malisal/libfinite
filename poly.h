@@ -11,14 +11,8 @@
 
 #include "bn.h"
 
-
-/*! Comparison results. */
-/*! Less. */
-#define POLY_CMP_L (-1)
-/*! Greater. */
-#define POLY_CMP_G (1)
-/*! Equal. */
-#define POLY_CMP_E (0)
+#define POLY_CMP_E 1
+#define POLY_CMP_NE 0
 
 /*! Polynomial. */
 /*
@@ -79,6 +73,11 @@ poly_t *poly_copy(poly_t *d, poly_t *s, int adjust);
 * \brief Concatenate two polynomials (as lists of coefficients).
 */
 poly_t *poly_concat(poly_t *d, poly_t *a, poly_t *b);
+
+/*!
+* \brief Compare two polynomials.
+*/
+int poly_cmp(poly_t *p, poly_t *q);
 
 /*!
 * \brief Zero out coefficients.
