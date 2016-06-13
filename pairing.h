@@ -9,6 +9,15 @@
 
 #include "ec_pqr.h"
 
+
+/*! Comparison results. */
+/*! Less. */
+#define POINT_CMP_L (-1)
+/*! Greater. */
+#define POINT_CMP_G (1)
+/*! Equal. */
+#define POINT_CMP_E (0)
+
 /*!
 * \brief Compute line.
 */

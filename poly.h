@@ -11,6 +11,15 @@
 
 #include "bn.h"
 
+
+/*! Comparison results. */
+/*! Less. */
+#define POLY_CMP_L (-1)
+/*! Greater. */
+#define POLY_CMP_G (1)
+/*! Equal. */
+#define POLY_CMP_E (0)
+
 /*! Polynomial. */
 /*
 * Define a polynomial P of degree n as
