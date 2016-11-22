@@ -197,7 +197,7 @@ static bn_t *_bn_rshift_limbs(bn_t *a, int n)
 static bn_t *_bn_rshift(bn_t *a, int b)
 {
    int x;
-   ull_t mask; 
+   ull_t mask;
    ul_t prev_c = 0;
    ul_t c = 0;
 
@@ -237,7 +237,7 @@ static bn_t *_bn_mad_ui(bn_t *d, bn_t *a, ul_t b)
 
       S >>= BN_LIMB_BITS;
    }
-   
+
    // Add in the remaining carry
    while(S)
    {
@@ -282,7 +282,7 @@ bn_t *bn_from_bin(bn_t *a, s8 *s, int len)
       {
          if(x < 0)
             break;
-         
+
          p_limb[w] = s[x];
 
          x -= 1;
@@ -358,10 +358,10 @@ bn_t *bn_zero(bn_t *a)
 bn_t *bn_alloc(int size)
 {
    int s;
-   
+
    bn_t *ret = (bn_t *)mem_alloc(sizeof(bn_t));
    memset((char *)ret, 0x00, sizeof(bn_t));
-   
+
    ret->n = size;
    ret->n_limbs = BYTES_TO_LIMBS(size);
 
@@ -602,7 +602,7 @@ bn_t *bn_write(FILE *fp, bn_t *num)
    bn_to_bin(data, num);
    fwrite(data, 1, num->n, fp);
    mem_free(data);
-   
+
    return num;
 }
 #endif
@@ -658,7 +658,7 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
 
       S >>= BN_LIMB_BITS;
    }
-   
+
    d->l[a->n_limbs] = S;
 
    return d;
@@ -700,7 +700,7 @@ bn_t *bn_rand(bn_t *a)
       read(fd, tmp, size);
       close(fd);
    #endif
-   
+
    bn_zero(a);
    bn_from_bin(a, (s8 *)tmp, size);
 
@@ -718,7 +718,7 @@ bn_t *bn_rand_range(bn_t *a, int x, bn_t *b, int y)
    while(1)
    {
       bn_rand(a);
-      
+
       if(bn_cmp_ui(a, x) <= 0)   // Check a < x
          continue;
 
@@ -740,7 +740,7 @@ bn_t *bn_to_mon(bn_t *a, bn_t *n)
    bn_t *at = bn_copy(bn_alloc_limbs(a->n_limbs + 1), a);
    bn_t *nt = bn_copy(bn_alloc_limbs(n->n_limbs + 1), n);
 
-   // We can't loop bn_add here since bn_add calls bn_reduce which in turn calls bn_to_mon. 
+   // We can't loop bn_add here since bn_add calls bn_reduce which in turn calls bn_to_mon.
    // POOF, infinite recursion.
    for(x = 0; x < BN_LIMB_BITS * a->n_limbs; x++)
    {
@@ -779,7 +779,7 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
       _bn_mon_init(n);
 
    // These nums need to be 4 digits bigger so we prevent overflows.
-   // The mul_ui increases digit count by 1, and add's possibly increase 
+   // The mul_ui increases digit count by 1, and add's possibly increase
    // the count by one (each).
 
    bn_t *t = bn_alloc_limbs(n->n_limbs + 4);
@@ -824,7 +824,7 @@ bn_t *bn_mon_reduce(bn_t *a, bn_t *n)
 
    bn_t *at = bn_copy(bn_alloc_limbs(a->n_limbs * 2 + 1), a);
    bn_t *tmp = bn_alloc_limbs(a->n_limbs * 2 + 1);
-   
+
    for(x = 0; x < a->n_limbs; x++)
    {
       mu = at->l[x] * n->mp % r;
@@ -838,7 +838,7 @@ bn_t *bn_mon_reduce(bn_t *a, bn_t *n)
    _bn_rshift_limbs(at, a->n_limbs);
 
    bn_copy(a, at);
-   
+
    bn_free(at);
    bn_free(tmp);
 
@@ -860,7 +860,7 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    {
       if(bn_getbit(e, x))
          bn_mon_mul(t, t, s, n);
-      
+
       bn_mon_mul(s, s, s, n);
    }
 
@@ -884,7 +884,7 @@ bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n)
 
    _bn_sub(t, t, s);
    bn_mon_pow(d, a, t, n);
-   
+
    bn_free(t);
    bn_free(s);
 
@@ -903,4 +903,3 @@ bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 
    return d;
 }
-
