@@ -15,12 +15,12 @@ int main()
    // RSA Encryption
    // c = m1 ^ e % N
    bn_pow_mod(c, m1, e, N);
-   bn_print(stdout, d);
+   bn_print(stdout, "", d, "\n");
 
    // RSA Decryption
    // m2 = c ^ d % N
    bn_pow_mod(m2, c, d, N);
-   bn_print(stdout, m2);
+   bn_print(stdout, "", m2, "\n");
 
    s8 plain[32];
    bn_to_bin(plain, m2);
