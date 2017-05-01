@@ -24,12 +24,11 @@
 static void _bn_mon_init(bn_t *n)
 {
    ul_t x, m0 = n->l[0];
-   int i;
 
    x  = m0;
    x += ((m0 + 2) & 4) << 1;
 
-   for(i = BN_LIMB_BITS; i >= 8; i /= 2)
+   for(int i = BN_LIMB_BITS; i >= 8; i /= 2)
       x *= (2 - (m0 * x));
 
    n->mp = ~x + 1;
@@ -60,15 +59,14 @@ static u8 _bn_str_to_u8(const s8 *str)
 
 static int _bn_add(bn_t *d, bn_t *a, bn_t *b)
 {
-   int x;
    ull_t C = 0;
 
    assert(a->n == b->n);
 
-   for(x = 0; x < b->n_limbs; x++)
+   for(int i = 0; i < b->n_limbs; i++)
    {
-      C += (ull_t)a->l[x] + b->l[x];
-      d->l[x] = C;
+      C += (ull_t)a->l[i] + b->l[i];
+      d->l[i] = C;
 
       C >>= BN_LIMB_BITS;
    }
@@ -78,13 +76,12 @@ static int _bn_add(bn_t *d, bn_t *a, bn_t *b)
 
 static int _bn_add_ui(bn_t *d, bn_t *a, ul_t b)
 {
-   int x;
    ull_t C = b;
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int i = 0; i < a->n_limbs; i++)
    {
-      C += (ull_t)a->l[x];
-      d->l[x] = C;
+      C += (ull_t)a->l[i];
+      d->l[i] = C;
 
       C >>= BN_LIMB_BITS;
    }
@@ -94,15 +91,14 @@ static int _bn_add_ui(bn_t *d, bn_t *a, ul_t b)
 
 static int _bn_sub(bn_t *d, bn_t *a, bn_t *b)
 {
-   int x;
    ull_t C = 1;
 
    assert(a->n == b->n);
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int i = 0; i < a->n_limbs; i++)
    {
-      C += (ull_t)a->l[x] + BN_MAX_DIGIT - b->l[x];
-      d->l[x] = C;
+      C += (ull_t)a->l[i] + BN_MAX_DIGIT - b->l[i];
+      d->l[i] = C;
 
       C >>= BN_LIMB_BITS;
    }
@@ -112,13 +108,12 @@ static int _bn_sub(bn_t *d, bn_t *a, bn_t *b)
 
 static int _bn_sub_ui(bn_t *d, bn_t *a, ul_t b)
 {
-   int x;
    ull_t C = 1 + BN_MAX_DIGIT - b;
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int i = 0; i < a->n_limbs; i++)
    {
-      C += (ull_t)a->l[x];
-      d->l[x] = C;
+      C += (ull_t)a->l[i];
+      d->l[i] = C;
 
       C >>= BN_LIMB_BITS;
    }
@@ -140,20 +135,19 @@ static int _bn_big_endian()
 
 static bn_t *_bn_lshift_limbs(bn_t *a, int n)
 {
-   int x;
+	int i;
 
-   for(x = a->n_limbs; x >= n; x--)
-      a->l[x] = a->l[x-n];
+   for(i = a->n_limbs; i >= n; i--)
+      a->l[i] = a->l[i-n];
 
-   while(x >= 0)
-      a->l[x--] = 0;
+   while(i >= 0)
+      a->l[i--] = 0;
 
    return a;
 }
 
 static bn_t *_bn_lshift(bn_t *a, int b)
 {
-   int x;
    ull_t mask = -1;
    ul_t prev_c = 0;
    ul_t c = 0;
@@ -161,7 +155,7 @@ static bn_t *_bn_lshift(bn_t *a, int b)
    if(b != BN_LIMB_BITS)
       mask = ~(mask >> b);
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int x = 0; x < a->n_limbs; x++)
    {
       c = a->l[x] & mask;
 
@@ -196,7 +190,6 @@ static bn_t *_bn_rshift_limbs(bn_t *a, int n)
 
 static bn_t *_bn_rshift(bn_t *a, int b)
 {
-   int x;
    ull_t mask;
    ul_t prev_c = 0;
    ul_t c = 0;
@@ -204,7 +197,7 @@ static bn_t *_bn_rshift(bn_t *a, int b)
    // Create the mask
    mask = ((ull_t)1 << b) - 1;
 
-   for(x = a->n_limbs - 1; x >= 0; x--)
+   for(int x = a->n_limbs - 1; x >= 0; x--)
    {
       c = a->l[x] & mask;
 
@@ -253,9 +246,7 @@ static bn_t *_bn_mad_ui(bn_t *d, bn_t *a, ul_t b)
 
 int bn_maxbit(bn_t *a)
 {
-   int x;
-
-   for(x = a->n_limbs * BN_LIMB_BITS; x >= 0; x--)
+   for(int x = a->n_limbs * BN_LIMB_BITS; x >= 0; x--)
       if(bn_getbit(a, x) != 0)
          return x;
 
@@ -299,12 +290,11 @@ bn_t *bn_from_bin(bn_t *a, s8 *s, int len)
 
 u8 *bn_to_bin(u8 *s, bn_t *a)
 {
-   int x, y;
    ul_t *p = (ul_t *)s;
 
    int be = _bn_big_endian();
 
-   for(x = a->n_limbs - 1, y = 0; x >= 0; x--, y++)
+   for(int x = a->n_limbs - 1, y = 0; x >= 0; x--, y++)
    {
       if(be)
          p[y] = a->l[x];
@@ -399,9 +389,7 @@ void bn_free(bn_t *a)
 
 inline bn_t *bn_set_ui(bn_t *a, u64 val)
 {
-   int x;
-
-   for(x = 0; x < sizeof(val) / sizeof(ul_t); x++)
+   for(int x = 0; x < sizeof(val) / sizeof(ul_t); x++)
    {
       a->l[x] = val & (ul_t)-1;
       val >>= BN_LIMB_BITS;
@@ -464,11 +452,9 @@ bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
 
 int bn_cmp(bn_t *a, bn_t *b)
 {
-   int x;
+   assert(a->n_limbs == b->n_limbs);
 
-   assert(a->n == b->n);
-
-   for(x = a->n_limbs; x >= 0; x--)
+   for(int x = a->n_limbs; x >= 0; x--)
    {
       if(a->l[x] < b->l[x])
          return BN_CMP_L;
@@ -482,7 +468,6 @@ int bn_cmp(bn_t *a, bn_t *b)
 int bn_cmp_ui(bn_t *a, ul_t b)
 {
    int ret = 0;
-   int x;
 
    if(a->l[0] < b)
       ret = BN_CMP_L;
@@ -492,7 +477,7 @@ int bn_cmp_ui(bn_t *a, ul_t b)
       ret = BN_CMP_E;
 
    // Let's walk over all other digits of a (if any)
-   for(x = 1; x < a->n_limbs; x++)
+   for(int x = 1; x < a->n_limbs; x++)
    {
       if(a->l[x] != 0)
       {
@@ -507,9 +492,7 @@ int bn_cmp_ui(bn_t *a, ul_t b)
 
 int bn_is_zero(bn_t *a)
 {
-   int x;
-
-   for(x = 0; x < a->n_limbs; x++)
+   for(int x = 0; x < a->n_limbs; x++)
       if(a->l[x] != 0)
          return 0;
 
@@ -628,10 +611,9 @@ bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 {
    // D = A * B
-   int x;
    bn_t *t = bn_alloc(d->n >= a->n + b->n + 2);
 
-   for(x = 0; x < b->n_limbs; x++)
+   for(int x = 0; x < b->n_limbs; x++)
    {
       bn_mul_ui(t, b, a->l[x]);
       _bn_lshift_limbs(t, x);
@@ -644,14 +626,14 @@ bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
 {
    // D = A * b
-   int x;
    ull_t S = 0;
 
    // Can a hold the result?
    assert(d->n >= (a->n + 1));
 
    bn_zero(d);
-   for(x = 0; x < a->n_limbs; x++)
+
+   for(int x = 0; x < a->n_limbs; x++)
    {
       S += (ull_t)a->l[x] * b;
       d->l[x] = S;
@@ -666,9 +648,7 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
 
 bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 {
-   int x;
-
-   for(x = bn_maxbit(a); x >= 0; x--)
+   for(int x = bn_maxbit(a); x >= 0; x--)
    {
       bn_lshift(q, 1);
       bn_lshift(r, 1);
@@ -735,14 +715,12 @@ bn_t *bn_rand_range(bn_t *a, int x, bn_t *b, int y)
 
 bn_t *bn_to_mon(bn_t *a, bn_t *n)
 {
-   int x;
-
    bn_t *at = bn_copy(bn_alloc_limbs(a->n_limbs + 1), a);
    bn_t *nt = bn_copy(bn_alloc_limbs(n->n_limbs + 1), n);
 
    // We can't loop bn_add here since bn_add calls bn_reduce which in turn calls bn_to_mon.
    // POOF, infinite recursion.
-   for(x = 0; x < BN_LIMB_BITS * a->n_limbs; x++)
+   for(int x = 0; x < BN_LIMB_BITS * a->n_limbs; x++)
    {
       _bn_add(at, at, at);
       bn_reduce(at, nt);
@@ -770,7 +748,6 @@ bn_t *bn_from_mon(bn_t *a, bn_t *n)
 
 bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
 {
-   int x;
    ul_t q;
    ull_t r = (ull_t)1 << BN_LIMB_BITS;
 
@@ -787,7 +764,7 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
 
    bn_copy(n_b, n);
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int x = 0; x < a->n_limbs; x++)
    {
       q = (t->l[0] + a->l[x] * b->l[0]) * n->mp;
       // q % r == q & (r-1), for r power of two
@@ -814,7 +791,6 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
 // Montgomery reduction
 bn_t *bn_mon_reduce(bn_t *a, bn_t *n)
 {
-   int x;
    ull_t r = (ull_t)1 << BN_LIMB_BITS;
    ul_t mu;
 
@@ -825,7 +801,7 @@ bn_t *bn_mon_reduce(bn_t *a, bn_t *n)
    bn_t *at = bn_copy(bn_alloc_limbs(a->n_limbs * 2 + 1), a);
    bn_t *tmp = bn_alloc_limbs(a->n_limbs * 2 + 1);
 
-   for(x = 0; x < a->n_limbs; x++)
+   for(int x = 0; x < a->n_limbs; x++)
    {
       mu = at->l[x] * n->mp % r;
 
@@ -851,12 +827,10 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_t *s = bn_copy(bn_alloc(a->n), a);
    bn_t *t = bn_copy(bn_alloc(d->n), d);
 
-   int x;
-
    bn_set_ui(t, 1);
    bn_to_mon(t, n);
 
-   for(x = 0; x <= bn_maxbit(e); x++)
+   for(int x = 0; x <= bn_maxbit(e); x++)
    {
       if(bn_getbit(e, x))
          bn_mon_mul(t, t, s, n);
