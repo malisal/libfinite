@@ -60,7 +60,7 @@
 #endif
 
 #if !defined(BN_ASSERT)
-   #define assert(...) 
+   #define assert(...)
 #endif
 
 typedef char      s8;
@@ -302,7 +302,7 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n);
 bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n);
 
 /*!
-* \brief This is a helper function which does *NOT* take Montgomery form 
+* \brief This is a helper function which does *NOT* take Montgomery form
 *        numbers. It will make conversions internally.
 *
 *        D = A**B % N

@@ -61,9 +61,9 @@ static int _bn_add(bn_t *d, bn_t *a, bn_t *b)
 {
    ull_t C = 0;
 
-   assert(a->n == b->n);
+//   assert(a->n == b->n);
 
-   for(int i = 0; i < b->n_limbs; i++)
+   for(int i = 0; i < MIN(a->n_limbs, b->n_limbs); i++)
    {
       C += (ull_t)a->l[i] + b->l[i];
       d->l[i] = C;
@@ -93,9 +93,9 @@ static int _bn_sub(bn_t *d, bn_t *a, bn_t *b)
 {
    ull_t C = 1;
 
-   assert(a->n == b->n);
+//   assert(a->n == b->n);
 
-   for(int i = 0; i < a->n_limbs; i++)
+   for(int i = 0; i < MIN(a->n_limbs, b->n_limbs); i++)
    {
       C += (ull_t)a->l[i] + BN_MAX_DIGIT - b->l[i];
       d->l[i] = C;
@@ -452,7 +452,20 @@ bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
 
 int bn_cmp(bn_t *a, bn_t *b)
 {
-   assert(a->n_limbs == b->n_limbs);
+//   assert(a->n_limbs == b->n_limbs);
+
+	if(a->n_limbs > b->n_limbs)
+	{
+		for(int i = b->n_limbs; i < a->n_limbs; i++)
+			if(a->l[i])
+				return BN_CMP_G;
+	}
+	else if(b->n_limbs > a->n_limbs)
+	{
+		for(int i = a->n_limbs; i < b->n_limbs; i++)
+			if(b->l[i])
+				return BN_CMP_G;
+	}
 
    for(int x = a->n_limbs; x >= 0; x--)
    {
@@ -755,14 +768,10 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
    if(n->mp == 0)
       _bn_mon_init(n);
 
-   // These nums need to be 4 digits bigger so we prevent overflows.
+   // This num needs to be 4 digits bigger so we prevent overflows.
    // The mul_ui increases digit count by 1, and add's possibly increase
    // the count by one (each).
-
    bn_t *t = bn_alloc_limbs(n->n_limbs + 4);
-   bn_t *n_b = bn_alloc_limbs(n->n_limbs + 4);
-
-   bn_copy(n_b, n);
 
    for(int x = 0; x < a->n_limbs; x++)
    {
@@ -777,13 +786,11 @@ bn_t *bn_mon_mul(bn_t *d, bn_t *a, bn_t *b, bn_t *n)
       _bn_rshift_limbs(t, 1);
    }
 
-   if(bn_cmp(t, n_b) >= 0)
-      _bn_sub(t, t, n_b);
+   if(bn_cmp(t, n) >= 0)
+      _bn_sub(t, t, n);
 
    bn_copy(d, t);
-
    bn_free(t);
-   bn_free(n_b);
 
    return d;
 }
