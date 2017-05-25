@@ -828,7 +828,8 @@ bn_t *bn_mon_reduce(bn_t *a, bn_t *n)
    return a;
 }
 
-bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
+// Square and multiply exponentiation
+bn_t *bn_mon_pow_sm(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 {
    // D = A**E % N
    bn_t *s = bn_copy(bn_alloc(a->n), a);
@@ -849,6 +850,87 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 
    bn_free(s);
    bn_free(t);
+
+   return d;
+}
+
+// Sliding-window exponentiation (HAC 14.83)
+bn_t *bn_mon_pow_sw(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
+{
+   // D = A**E % N
+   bn_t *s = bn_copy(bn_alloc(a->n), a);
+   bn_t *t = bn_copy(bn_alloc(d->n), d);
+
+	// Select which window size to use
+	int blen = BN_LIMB_BITS * n->n_limbs;
+	int wsize = (blen > 671) ? 6 : (blen > 239) ? 5 : (blen >  79) ? 4 : (blen > 23) ? 3 : 1;
+
+	//
+	// Initialize the cache
+	//
+	bn_t *cache[1 << wsize];
+	bn_set_ui(t, 1);
+   bn_to_mon(t, n);
+
+	// Initialize the cache first
+	for(int i = 0; i < (1 << wsize); i++)
+		cache[i] = bn_zero(bn_alloc(a->n));
+
+	// 1st and 2nd elements are always the same
+	bn_copy(cache[1], a);
+	bn_mon_mul(cache[2], a, a, n);
+
+	for(int i = 1; i < 1 << (wsize - 1); i++)
+		bn_mon_mul(cache[2*i+1], cache[2*i-1], cache[2], n);
+
+	// And iterate...
+   for(int i = bn_maxbit(e); i >= 0;)
+   {
+		// In the 0-bit case, just square
+		if(!bn_getbit(e, i))
+		{
+			bn_mon_mul(t, t, t, n);
+			i--;
+		}
+		else
+		{
+			int num = 0;
+			int sub = 0;
+			int idx = 0;
+
+			for(int j = 0; j < wsize; j++)
+			{
+				if(i - j < 0)
+					break;
+
+				int bit = bn_getbit(e, i - j);
+				idx = (idx << 1) | bit;
+
+				if(bit)
+				{
+					num = idx;
+					sub = j + 1;
+				}
+			}
+
+			// Square first
+			for(int j = 0; j < sub; j++)
+				bn_mon_mul(t, t, t, n);
+
+			// ...then multiply with cache
+			bn_mon_mul(t, t, cache[num], n);
+
+			i -= sub;
+		}
+   }
+
+   bn_copy(d, t);
+
+   bn_free(s);
+   bn_free(t);
+
+	for(int i = 0; i < (1 << wsize); i++)
+		bn_free(cache[i]);
 
    return d;
 }
@@ -878,7 +960,7 @@ bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_t *t = bn_copy(bn_alloc(a->n), a);
    bn_to_mon(t, n);
 
-   bn_from_mon(bn_mon_pow(d, t, e, n), n);
+   bn_from_mon(bn_mon_pow_sw(d, t, e, n), n);
 
    bn_free(t);
 
