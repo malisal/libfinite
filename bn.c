@@ -135,7 +135,7 @@ static int _bn_big_endian()
 
 static bn_t *_bn_lshift_limbs(bn_t *a, int n)
 {
-	int i;
+   int i;
 
    for(i = a->n_limbs; i >= n; i--)
       a->l[i] = a->l[i-n];
@@ -454,18 +454,18 @@ int bn_cmp(bn_t *a, bn_t *b)
 {
 //   assert(a->n_limbs == b->n_limbs);
 
-	if(a->n_limbs > b->n_limbs)
-	{
-		for(int i = b->n_limbs; i < a->n_limbs; i++)
-			if(a->l[i])
-				return BN_CMP_G;
-	}
-	else if(b->n_limbs > a->n_limbs)
-	{
-		for(int i = a->n_limbs; i < b->n_limbs; i++)
-			if(b->l[i])
-				return BN_CMP_G;
-	}
+   if(a->n_limbs > b->n_limbs)
+   {
+      for(int i = b->n_limbs; i < a->n_limbs; i++)
+         if(a->l[i])
+            return BN_CMP_G;
+   }
+   else if(b->n_limbs > a->n_limbs)
+   {
+      for(int i = a->n_limbs; i < b->n_limbs; i++)
+         if(b->l[i])
+            return BN_CMP_G;
+   }
 
    for(int x = a->n_limbs; x >= 0; x--)
    {
@@ -861,67 +861,67 @@ bn_t *bn_mon_pow_sw(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_t *s = bn_copy(bn_alloc(a->n), a);
    bn_t *t = bn_copy(bn_alloc(d->n), d);
 
-	// Select which window size to use
-	int blen = BN_LIMB_BITS * n->n_limbs;
-	int wsize = (blen > 671) ? 6 : (blen > 239) ? 5 : (blen >  79) ? 4 : (blen > 23) ? 3 : 1;
+   // Select which window size to use
+   int blen = BN_LIMB_BITS * n->n_limbs;
+   int wsize = (blen > 671) ? 6 : (blen > 239) ? 5 : (blen >  79) ? 4 : (blen > 23) ? 3 : 1;
 
-	//
-	// Initialize the cache
-	//
-	bn_t *cache[1 << wsize];
-	bn_set_ui(t, 1);
+   //
+   // Initialize the cache
+   //
+   bn_t *cache[1 << wsize];
+   bn_set_ui(t, 1);
    bn_to_mon(t, n);
 
-	// Initialize the cache first
-	for(int i = 0; i < (1 << wsize); i++)
-		cache[i] = bn_zero(bn_alloc(a->n));
+   // Initialize the cache first
+   for(int i = 0; i < (1 << wsize); i++)
+      cache[i] = bn_zero(bn_alloc(a->n));
 
-	// 1st and 2nd elements are always the same
-	bn_copy(cache[1], a);
-	bn_mon_mul(cache[2], a, a, n);
+   // 1st and 2nd elements are always the same
+   bn_copy(cache[1], a);
+   bn_mon_mul(cache[2], a, a, n);
 
-	for(int i = 1; i < 1 << (wsize - 1); i++)
-		bn_mon_mul(cache[2*i+1], cache[2*i-1], cache[2], n);
+   for(int i = 1; i < 1 << (wsize - 1); i++)
+      bn_mon_mul(cache[2*i+1], cache[2*i-1], cache[2], n);
 
-	// And iterate...
+   // And iterate...
    for(int i = bn_maxbit(e); i >= 0;)
    {
-		// In the 0-bit case, just square
-		if(!bn_getbit(e, i))
-		{
-			bn_mon_mul(t, t, t, n);
-			i--;
-		}
-		else
-		{
-			int num = 0;
-			int sub = 0;
-			int idx = 0;
+      // In the 0-bit case, just square
+      if(!bn_getbit(e, i))
+      {
+         bn_mon_mul(t, t, t, n);
+         i--;
+      }
+      else
+      {
+         int num = 0;
+         int sub = 0;
+         int idx = 0;
 
-			for(int j = 0; j < wsize; j++)
-			{
-				if(i - j < 0)
-					break;
+         for(int j = 0; j < wsize; j++)
+         {
+            if(i - j < 0)
+               break;
 
-				int bit = bn_getbit(e, i - j);
-				idx = (idx << 1) | bit;
+            int bit = bn_getbit(e, i - j);
+            idx = (idx << 1) | bit;
 
-				if(bit)
-				{
-					num = idx;
-					sub = j + 1;
-				}
-			}
+            if(bit)
+            {
+               num = idx;
+               sub = j + 1;
+            }
+         }
 
-			// Square first
-			for(int j = 0; j < sub; j++)
-				bn_mon_mul(t, t, t, n);
+         // Square first
+         for(int j = 0; j < sub; j++)
+            bn_mon_mul(t, t, t, n);
 
-			// ...then multiply with cache
-			bn_mon_mul(t, t, cache[num], n);
+         // ...then multiply with cache
+         bn_mon_mul(t, t, cache[num], n);
 
-			i -= sub;
-		}
+         i -= sub;
+      }
    }
 
    bn_copy(d, t);
@@ -929,8 +929,8 @@ bn_t *bn_mon_pow_sw(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_free(s);
    bn_free(t);
 
-	for(int i = 0; i < (1 << wsize); i++)
-		bn_free(cache[i]);
+   for(int i = 0; i < (1 << wsize); i++)
+      bn_free(cache[i]);
 
    return d;
 }
