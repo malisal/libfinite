@@ -946,7 +946,7 @@ bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n)
    bn_set_ui(s, 2);
 
    _bn_sub(t, t, s);
-   bn_mon_pow(d, a, t, n);
+   bn_mon_pow_sw(d, a, t, n);
 
    bn_free(t);
    bn_free(s);
