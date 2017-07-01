@@ -452,8 +452,9 @@ bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
 
 int bn_cmp(bn_t *a, bn_t *b)
 {
-//   assert(a->n_limbs == b->n_limbs);
+	//	assert(a->n_limbs == b->n_limbs);
 
+	// First check the high limbs, if any
    if(a->n_limbs > b->n_limbs)
    {
       for(int i = b->n_limbs; i < a->n_limbs; i++)
@@ -467,7 +468,8 @@ int bn_cmp(bn_t *a, bn_t *b)
             return BN_CMP_G;
    }
 
-   for(int x = a->n_limbs; x >= 0; x--)
+	// ...then check the main limbs
+   for(int x = MIN(a->n_limbs, b->n_limbs); x >= 0; x--)
    {
       if(a->l[x] < b->l[x])
          return BN_CMP_L;
