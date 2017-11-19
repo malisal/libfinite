@@ -840,9 +840,9 @@ bn_t *bn_mon_pow_sm(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_set_ui(t, 1);
    bn_to_mon(t, n);
 
-   for(int x = 0; x <= bn_maxbit(e); x++)
+   for(int i = 0; i <= bn_maxbit(e); i++)
    {
-      if(bn_getbit(e, x))
+      if(bn_getbit(e, i))
          bn_mon_mul(t, t, s, n);
 
       bn_mon_mul(s, s, s, n);
@@ -852,6 +852,37 @@ bn_t *bn_mon_pow_sm(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 
    bn_free(s);
    bn_free(t);
+
+   return d;
+}
+
+// Square and multiply montgomery power ladder
+bn_t *bn_mon_pow_ml(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
+{
+   // D = A**E % N
+   bn_t *r0 = bn_set_ui(bn_alloc(a->n), 1);
+   bn_t *r1 = bn_copy(bn_alloc(a->n), a);
+
+   bn_to_mon(r0, n);
+
+   for(int i = e->n * 8; i >= 0; i--)
+   {
+      if(bn_getbit(e, i))
+      {
+         bn_mon_mul(r0, r0, r1, n);
+         bn_mon_mul(r1, r1, r1, n);
+      }
+      else
+      {
+         bn_mon_mul(r1, r0, r1, n);
+         bn_mon_mul(r0, r0, r0, n);
+      }
+   }
+
+   bn_copy(d, r0);
+
+   bn_free(r0);
+   bn_free(r1);
 
    return d;
 }
@@ -963,8 +994,10 @@ bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
    bn_to_mon(t, n);
 
    bn_from_mon(bn_mon_pow_sw(d, t, e, n), n);
+//   bn_from_mon(bn_mon_pow_ml(d, t, e, n), n);
 
    bn_free(t);
 
    return d;
 }
+

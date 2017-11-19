@@ -2,7 +2,7 @@
 #define _CONFIG_H_
 
 /*! Size (in bits) of each limb */
-#define BN_LIMB_SIZE 32
+#define BN_LIMB_SIZE 64
 
 /*! Include file-related functions */
 #define BN_PRINT_FUNCS
