@@ -15,9 +15,6 @@ int main()
 
    bn_t *c = bn_alloc(32);
 
-  bn_inv(rez, d, N);
-  bn_print(stdout, "REZ = ", rez, "\n");
-
    // RSA Encryption
    // c = m1 ^ e % N
    bn_pow_mod(c, m1, e, N);
