@@ -125,6 +125,11 @@ int bn_maxbit(bn_t *a);
 int bn_getbit(bn_t *a, int x);
 
 /*!
+* \brief Sets the x-th bit.
+*/
+void bn_setbit(bn_t *a, int x);
+
+/*!
 * \brief Read bignum from char array (binary data).
 */
 bn_t *bn_from_bin(bn_t *a, s8 *s, int len);
@@ -207,6 +212,11 @@ int bn_is_zero(bn_t *a);
 * \brief a = a % n
 */
 bn_t *bn_reduce(bn_t *a, bn_t *n);
+
+/*!
+* \brief a = a % n
+*/
+bn_t *bn_reduce_slow(bn_t *a, bn_t *n);
 
 /*!
 * \brief Shift left by a number of bits.

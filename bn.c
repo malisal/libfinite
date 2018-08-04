@@ -148,7 +148,7 @@ static bn_t *_bn_lshift_limbs(bn_t *a, int n)
 
 static bn_t *_bn_lshift(bn_t *a, int b)
 {
-   ull_t mask = -1;
+   ul_t mask = -1;
    ul_t prev_c = 0;
    ul_t c = 0;
 
@@ -256,6 +256,11 @@ int bn_maxbit(bn_t *a)
 int bn_getbit(bn_t *a, int x)
 {
    return (a->l[x / BN_LIMB_BITS] >> (x % BN_LIMB_BITS)) & 1;
+}
+
+void bn_setbit(bn_t *a, int x)
+{
+   a->l[x / BN_LIMB_BITS] |= 1 << (x % BN_LIMB_BITS);
 }
 
 bn_t *bn_from_bin(bn_t *a, s8 *s, int len)
@@ -516,8 +521,22 @@ int bn_is_zero(bn_t *a)
 
 bn_t *bn_reduce(bn_t *a, bn_t *n)
 {
-   while(bn_cmp(a, n) >= 0)
+	while(bn_cmp(a, n) >= 0)
       _bn_sub(a, a, n);
+
+   return a;
+}
+
+bn_t *bn_reduce_slow(bn_t *a, bn_t *n)
+{
+	bn_t *q = bn_alloc_limbs(n->n_limbs);
+	bn_t *r = bn_alloc_limbs(n->n_limbs);
+
+	bn_divrem(q, r, a, n);
+	bn_copy(a, r);
+
+	bn_free(q);
+	bn_free(r);
 
    return a;
 }
@@ -605,34 +624,28 @@ bn_t *bn_write(FILE *fp, bn_t *num)
 }
 #endif
 
-/*
 bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 {
-   // D = A * B
-   int x;
+	// D = A * b
 
-   for(x = _bn_maxbit(b); x >= 0; x--)
+   // Can a hold the result?
+   assert(d->n >= (a->n * 2 + 1));
+
+   bn_zero(d);
+
+   for(int i = 0; i < a->n_limbs; i++)
    {
-      bn_lshift(d, 1);
+		ull_t S = 0;
 
-      if(bn_getbit(b, x))
-         _bn_add(d, d, a);
-   }
+		for(int j = 0; j < a->n_limbs; j++)
+		{
+			S += (ull_t)a->l[i] * b->l[j];
+	      d->l[i+j] += S;
 
-   return d;
-}
-*/
+	      S >>= BN_LIMB_BITS;
+		}
 
-bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
-{
-   // D = A * B
-   bn_t *t = bn_alloc(d->n >= a->n + b->n + 2);
-
-   for(int x = 0; x < b->n_limbs; x++)
-   {
-      bn_mul_ui(t, b, a->l[x]);
-      _bn_lshift_limbs(t, x);
-      _bn_add(d, d, t);
+		d->l[i + a->n_limbs] = S;
    }
 
    return d;
@@ -663,17 +676,20 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
 
 bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 {
-   for(int x = bn_maxbit(a); x >= 0; x--)
+	bn_zero(q);
+	bn_zero(r);
+
+   for(int i = bn_maxbit(a); i >= 0 ;i--)
    {
-      bn_lshift(q, 1);
       bn_lshift(r, 1);
 
-      r->l[0] |= bn_getbit(a, x);
+      if(bn_getbit(a, i))
+			bn_setbit(r, 0);
 
       if(bn_cmp(r, b) >= 0)
       {
          _bn_sub(r, r, b);
-         q->l[0] |= 1;
+         bn_setbit(q, i);
       }
    }
 
@@ -1000,4 +1016,3 @@ bn_t *bn_pow_mod(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 
    return d;
 }
-
