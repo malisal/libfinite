@@ -457,9 +457,9 @@ bn_t *bn_sub_ui(bn_t *d, bn_t *a, unsigned int b, bn_t *n)
 
 int bn_cmp(bn_t *a, bn_t *b)
 {
-	//	assert(a->n_limbs == b->n_limbs);
+   //   assert(a->n_limbs == b->n_limbs);
 
-	// First check the high limbs, if any
+   // First check the high limbs, if any
    if(a->n_limbs > b->n_limbs)
    {
       for(int i = b->n_limbs; i < a->n_limbs; i++)
@@ -473,7 +473,7 @@ int bn_cmp(bn_t *a, bn_t *b)
             return BN_CMP_G;
    }
 
-	// ...then check the main limbs
+   // ...then check the main limbs
    for(int x = MIN(a->n_limbs, b->n_limbs); x >= 0; x--)
    {
       if(a->l[x] < b->l[x])
@@ -521,7 +521,7 @@ int bn_is_zero(bn_t *a)
 
 bn_t *bn_reduce(bn_t *a, bn_t *n)
 {
-	while(bn_cmp(a, n) >= 0)
+   while(bn_cmp(a, n) >= 0)
       _bn_sub(a, a, n);
 
    return a;
@@ -529,14 +529,14 @@ bn_t *bn_reduce(bn_t *a, bn_t *n)
 
 bn_t *bn_reduce_slow(bn_t *a, bn_t *n)
 {
-	bn_t *q = bn_alloc_limbs(n->n_limbs);
-	bn_t *r = bn_alloc_limbs(n->n_limbs);
+   bn_t *q = bn_alloc_limbs(n->n_limbs);
+   bn_t *r = bn_alloc_limbs(n->n_limbs);
 
-	bn_divrem(q, r, a, n);
-	bn_copy(a, r);
+   bn_divrem(q, r, a, n);
+   bn_copy(a, r);
 
-	bn_free(q);
-	bn_free(r);
+   bn_free(q);
+   bn_free(r);
 
    return a;
 }
@@ -626,7 +626,7 @@ bn_t *bn_write(FILE *fp, bn_t *num)
 
 bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 {
-	// D = A * b
+   // D = A * b
 
    // Can a hold the result?
    assert(d->n >= (a->n * 2 + 1));
@@ -635,17 +635,17 @@ bn_t *bn_mul(bn_t *d, bn_t *a, bn_t *b)
 
    for(int i = 0; i < a->n_limbs; i++)
    {
-		ull_t S = 0;
+      ull_t S = 0;
 
-		for(int j = 0; j < a->n_limbs; j++)
-		{
-			S += (ull_t)a->l[i] * b->l[j];
-	      d->l[i+j] += S;
+      for(int j = 0; j < a->n_limbs; j++)
+      {
+         S += (ull_t)a->l[i] * b->l[j];
+         d->l[i+j] += S;
 
-	      S >>= BN_LIMB_BITS;
-		}
+         S >>= BN_LIMB_BITS;
+      }
 
-		d->l[i + a->n_limbs] = S;
+      d->l[i + a->n_limbs] = S;
    }
 
    return d;
@@ -676,20 +676,21 @@ bn_t *bn_mul_ui(bn_t *d, bn_t *a, ul_t b)
 
 bn_t *bn_divrem(bn_t *q, bn_t *r, bn_t *a, bn_t *b)
 {
-	bn_zero(q);
-	bn_zero(r);
+   bn_zero(q);
+   bn_zero(r);
 
    for(int i = bn_maxbit(a); i >= 0 ;i--)
    {
       bn_lshift(r, 1);
+      bn_lshift(q, 1);
 
       if(bn_getbit(a, i))
-			bn_setbit(r, 0);
+         bn_setbit(r, 0);
 
       if(bn_cmp(r, b) >= 0)
       {
          _bn_sub(r, r, b);
-         bn_setbit(q, i);
+         bn_setbit(q, 0);
       }
    }
 
@@ -980,6 +981,50 @@ bn_t *bn_mon_pow_sw(bn_t *d, bn_t *a, bn_t *e, bn_t *n)
 
    for(int i = 0; i < (1 << wsize); i++)
       bn_free(cache[i]);
+
+   return d;
+}
+
+bn_t *bn_inv(bn_t *d, bn_t *a, bn_t *n)
+{
+   // D = A**-1 % N
+   bn_t *q = bn_alloc_limbs(n->n_limbs);
+   bn_t *r = bn_alloc_limbs(n->n_limbs);
+   bn_t *m = bn_alloc_limbs(n->n_limbs);
+   bn_t *t = bn_alloc_limbs(2*n->n_limbs);
+   bn_t *b = bn_copy(bn_alloc_limbs(n->n_limbs), n);
+   bn_t *nn = bn_copy(bn_alloc_limbs(2*n->n_limbs), n);
+
+   bn_t *x = bn_alloc_limbs(n->n_limbs);
+   bn_t *u = bn_alloc_limbs(n->n_limbs);
+
+   bn_set_ui(x, 0);
+   bn_set_ui(u, 1);
+
+   while(bn_cmp_ui(a, 0) != 0)
+   {
+      bn_divrem(q, r, b, a);
+
+      bn_mul(t, u, q);
+      bn_reduce_slow(t, nn);
+      bn_sub(m, x, t, n);
+
+      bn_copy(b, a);
+      bn_copy(a, r);
+      bn_copy(x, u);
+      bn_copy(u, m);
+   }
+
+   bn_copy(d, x);
+
+   bn_free(q);
+   bn_free(r);
+   bn_free(m);
+   bn_free(t);
+   bn_free(b);
+   bn_free(nn);
+   bn_free(x);
+   bn_free(u);
 
    return d;
 }

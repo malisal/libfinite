@@ -15,7 +15,7 @@ int main()
 
    bn_t *c = bn_alloc(32);
 
-  bn_mon_inv2(rez, d, N);
+  bn_inv(rez, d, N);
   bn_print(stdout, "REZ = ", rez, "\n");
 
    // RSA Encryption

@@ -312,6 +312,11 @@ bn_t *bn_mon_pow(bn_t *d, bn_t *a, bn_t *e, bn_t *n);
 bn_t *bn_mon_inv(bn_t *d, bn_t *a, bn_t *n);
 
 /*!
+* \brief D = A**-1 % N
+*/
+bn_t *bn_inv(bn_t *d, bn_t *a, bn_t *n);
+
+/*!
 * \brief This is a helper function which does *NOT* take Montgomery form
 *        numbers. It will make conversions internally.
 *
