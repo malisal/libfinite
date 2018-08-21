@@ -9,7 +9,7 @@
 
 ### Introduction
 
-`libfinite` is a small and fast bignum library. In our tests (timing modular exponentiation, with modulus of 4096 bits), `libfinite` was only 3 times slower than a [libgmp](https://gmplib.org/) implementation. Not bad for an example that compiles to ~5KB of code! Furthermore, `libfinite` can be compiled with arbitrary limb sizes. For example, if you need this code to run on a 16 bit processor, you could set `BN_LIMB_SIZE` to 8 in `config.h`. However, if you want maximum speed, use `BN_LIMB_SIZE` of 64.
+`libfinite` is a small and fast bignum library. In our tests (timing modular exponentiation, with modulus of 4096 bits), `libfinite` was only 2 (if compiled with clang), or 3 times slower (if compiled with gcc) than a [libgmp](https://gmplib.org/) and [OpenSSL](https://www.openssl.org/) implementation. Not bad for an example that compiles to ~5KB of code! Furthermore, `libfinite` can be compiled with arbitrary limb sizes. For example, if you need this code to run on a 16 bit processor, you could set `BN_LIMB_SIZE` to 8 in `config.h`. However, if you want maximum speed, use `BN_LIMB_SIZE` of 64.
 
 ##### `bn.c`
 Bignum library for arithmetic in Z/nZ (the positive half, since we don't care about signs) which can also be used to describe operations over some finite field GF(p) (F_p). Note that in some of the cases below, the use of a finite field can be substituted for a more general Z/nZ.
